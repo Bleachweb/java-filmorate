@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -18,7 +17,6 @@ public class FilmController {
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
-        validateFilm(film);
         film.setId(idCounter++);
         films.put(film.getId(), film);
         log.info("Добавлен фильм: {}", film);
@@ -30,7 +28,6 @@ public class FilmController {
         if (!films.containsKey(film.getId())) {
             throw new ValidationException("Фильм с таким id не найден.");
         }
-        validateFilm(film);
         films.put(film.getId(), film);
         log.info("Обновлен фильм: {}", film);
         return film;
@@ -41,9 +38,4 @@ public class FilmController {
         return films.values();
     }
 
-    private void validateFilm(Film film) {
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            throw new ValidationException("Дата релиза может быть не раньше 28 декабря 1895 года.");
-        }
-    }
 }
