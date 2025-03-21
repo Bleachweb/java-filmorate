@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class InMemoryUserStorage implements UserStorage {
+public class InMemoryUserStorage implements UserStorage, FriendStorage {
     private final Map<Integer, User> users = new HashMap<>();
     private int idCounter = 1;
 

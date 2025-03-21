@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.film.LikeStorage;
 
 import java.util.List;
 
@@ -12,11 +13,13 @@ import java.util.List;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserService userService;
+    private final LikeStorage likeStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserService userService) {
+    public FilmService(FilmStorage filmStorage, UserService userService, LikeStorage likeStorage) {
         this.filmStorage = filmStorage;
         this.userService = userService;
+        this.likeStorage = likeStorage;
     }
 
     public Film addFilm(Film film) {
@@ -24,9 +27,8 @@ public class FilmService {
     }
 
     public Film updateFilm(Film film) {
-        if (filmStorage.getFilmById(film.getId()).isEmpty()) {
-            throw new NotFoundException("Фильм с id " + film.getId() + " не найден.");
-        }
+        filmStorage.getFilmById(film.getId())
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + film.getId() + " не найден."));
         return filmStorage.updateFilm(film);
     }
 
@@ -40,22 +42,22 @@ public class FilmService {
     }
 
     public void addLike(int filmId, int userId) {
-        if (filmStorage.getFilmById(filmId).isEmpty()) {
-            throw new NotFoundException("Фильм с id " + filmId + " не найден.");
-        }
+        filmStorage.getFilmById(filmId)
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + filmId + " не найден."));
+
         userService.getUserById(userId);
-        filmStorage.addLike(filmId, userId);
+        likeStorage.addLike(filmId, userId);
     }
 
     public void removeLike(int filmId, int userId) {
-        if (filmStorage.getFilmById(filmId).isEmpty()) {
-            throw new NotFoundException("Фильм с id " + filmId + " не найден.");
-        }
+        filmStorage.getFilmById(filmId)
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + filmId + " не найден."));
+
         userService.getUserById(userId);
-        filmStorage.removeLike(filmId, userId);
+        likeStorage.removeLike(filmId, userId);
     }
 
     public List<Film> getPopularFilms(int count) {
-        return filmStorage.getPopularFilms(count);
+        return likeStorage.getPopularFilms(count);
     }
 }

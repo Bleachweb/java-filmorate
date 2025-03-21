@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class InMemoryFilmStorage implements FilmStorage {
+public class InMemoryFilmStorage implements FilmStorage, LikeStorage {
     private final Map<Integer, Film> films = new HashMap<>();
     private int idCounter = 1;
 
