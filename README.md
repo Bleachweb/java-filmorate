@@ -78,7 +78,6 @@ JOIN friendships f2 ON u.user_id = f2.friend_id AND f2.user_id = 2 AND f2.status
 | 2       | 3        |
 | 2       | 1        |
 | 3       | 2        |
-| 3       | 4        |
 
 </details>
 
