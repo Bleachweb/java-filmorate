@@ -46,7 +46,7 @@ JOIN friendships f2 ON u.user_id = f2.friend_id AND f2.user_id = 2 AND f2.status
 <details>
 <summary> Таблица films</summary>  
 
-| film_id | name   | description      | release_date | duration | mpa_code |
+| film_id | title  | description      | release_date | duration | mpa_code |
 |---------|--------|------------------|--------------|----------|----------|
 | 1       | first  | some description | 01/01/2025   | 90       | G        |
 | 2       | second | some description | 28/03/1995   | 90       | PG       |
@@ -78,6 +78,7 @@ JOIN friendships f2 ON u.user_id = f2.friend_id AND f2.user_id = 2 AND f2.status
 | 2       | 3        |
 | 2       | 1        |
 | 3       | 2        |
+| 3       | 4        |
 
 </details>
 
@@ -104,7 +105,7 @@ ORDER BY likes_count DESC
 LIMIT 3;
 ```
 
-| film_id | name   | description      | release_date | duration | mpa_code | likes_count |
+| film_id | title  | description      | release_date | duration | mpa_code | likes_count |
 |---------|--------|------------------|--------------|----------|----------|-------------|
 | 1       | first  | some description | 01/01/2025   | 90       | G        | 20          |
 | 2       | second | some description | 28/03/1995   | 90       | PG       | 18          |
