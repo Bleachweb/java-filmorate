@@ -16,6 +16,7 @@ Template repository for Filmorate project.
 | 1       | user1@example.com | user1 | Ваня | 1990-01-15 |
 | 2       | user2@example.com | user2 | Даша | 1995-05-20 |
 | 3       | user3@example.com | user3 | Катя | 1985-11-03 |
+
 </details>
 
 <details>
@@ -26,6 +27,7 @@ Template repository for Filmorate project.
 | 1       | 2         | CONFIRMED |
 | 1       | 3         | PENDING   |
 | 2       | 3         | CONFIRMED |
+
 </details>
 
 ```ruby
@@ -49,6 +51,7 @@ JOIN friendships f2 ON u.user_id = f2.friend_id AND f2.user_id = 2 AND f2.status
 | 1       | first  | some description | 01/01/2025   | 90       | G        |
 | 2       | second | some description | 28/03/1995   | 90       | PG       |
 | 3       | third  | some description | 13/08/2004   | 120      | R        |   
+
 </details>
 
 <details>
@@ -62,6 +65,7 @@ JOIN friendships f2 ON u.user_id = f2.friend_id AND f2.user_id = 2 AND f2.status
 | 4        | Триллер        |
 | 5        | Документальный |
 | 6        | Боевик         |
+
 </details>
 
 <details>
@@ -75,6 +79,7 @@ JOIN friendships f2 ON u.user_id = f2.friend_id AND f2.user_id = 2 AND f2.status
 | 2       | 1        |
 | 3       | 2        |
 | 3       | 4        |
+
 </details>
 
 ```ruby
