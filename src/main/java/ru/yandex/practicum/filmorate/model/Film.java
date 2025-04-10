@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.validation.ValidReleaseDate;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -16,7 +17,7 @@ public class Film {
     private int id;
 
     @NotBlank(message = "Название фильма не может быть пустым.")
-    private String name;
+    private String title;
 
     @Size(max = 200, message = "Максимальная длина описания — 200 символов.")
     private String description;
@@ -28,7 +29,11 @@ public class Film {
     @Positive(message = "Продолжительность фильма должна быть положительным числом.")
     private int duration;
 
-    private final Set<Integer> likes = new HashSet<>(); // Хранение лайков пользователей
+    private MpaRating mpa;
+
+    private List<Genre> genres;
+
+    private final Set<Integer> likes = new HashSet<>();
 
     public void addLike(int userId) {
         likes.add(userId);

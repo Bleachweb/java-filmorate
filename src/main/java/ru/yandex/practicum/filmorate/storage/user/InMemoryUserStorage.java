@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
@@ -39,8 +40,11 @@ public class InMemoryUserStorage implements UserStorage, FriendStorage {
         User user = users.get(userId);
         User friend = users.get(friendId);
         if (user != null && friend != null) {
-            user.getFriends().add(friendId);
-            friend.getFriends().add(userId);
+            user.addFriend(friendId, FriendshipStatus.PENDING);
+            if (friend.getFriends().containsKey(userId)) {
+                user.addFriend(friendId, FriendshipStatus.CONFIRMED);
+                friend.addFriend(userId, FriendshipStatus.CONFIRMED);
+            }
         }
     }
 
@@ -49,8 +53,8 @@ public class InMemoryUserStorage implements UserStorage, FriendStorage {
         User user = users.get(userId);
         User friend = users.get(friendId);
         if (user != null && friend != null) {
-            user.getFriends().remove(friendId);
-            friend.getFriends().remove(userId);
+            user.removeFriend(friendId);
+            friend.removeFriend(userId);
         }
     }
 
@@ -60,7 +64,7 @@ public class InMemoryUserStorage implements UserStorage, FriendStorage {
         if (user == null) {
             return Collections.emptyList();
         }
-        return user.getFriends().stream()
+        return user.getFriends().keySet().stream()
                 .map(users::get)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -68,8 +72,8 @@ public class InMemoryUserStorage implements UserStorage, FriendStorage {
 
     @Override
     public List<User> getCommonFriends(int userId, int otherId) {
-        Set<Integer> userFriends = users.get(userId).getFriends();
-        Set<Integer> otherFriends = users.get(otherId).getFriends();
+        Set<Integer> userFriends = users.get(userId).getFriends().keySet();
+        Set<Integer> otherFriends = users.get(otherId).getFriends().keySet();
         return userFriends.stream()
                 .filter(otherFriends::contains)
                 .map(users::get)

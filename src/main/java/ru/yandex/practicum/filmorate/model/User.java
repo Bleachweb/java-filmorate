@@ -8,8 +8,8 @@ import lombok.Getter;
 import ru.yandex.practicum.filmorate.validation.LoginConstraint;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 public class User {
@@ -29,10 +29,10 @@ public class User {
     private LocalDate birthday;
 
     @Getter
-    private final Set<Integer> friends = new HashSet<>(); // Хранение друзей
+    private Map<Integer, FriendshipStatus> friends = new HashMap<>();
 
-    public void addFriend(int friendId) {
-        friends.add(friendId);
+    public void addFriend(int friendId, FriendshipStatus status) {
+        friends.put(friendId, status);
     }
 
     public void removeFriend(int friendId) {

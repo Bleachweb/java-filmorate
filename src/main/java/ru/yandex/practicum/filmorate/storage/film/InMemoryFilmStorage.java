@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,6 +15,9 @@ public class InMemoryFilmStorage implements FilmStorage, LikeStorage {
     @Override
     public Film addFilm(Film film) {
         film.setId(idCounter++);
+        if (film.getMpa() == null) {
+            film.setMpa(MpaRating.G);
+        }
         films.put(film.getId(), film);
         return film;
     }
