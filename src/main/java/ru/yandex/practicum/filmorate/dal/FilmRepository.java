@@ -30,7 +30,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage,
             WHERE film_id = ?""";
 
     private static final String GET_ALL_FILM_QUERY = """
-            SELECT f.film_id, f.name AS film_name, f.description AS film_description, 
+            SELECT f.film_id, f.name AS film_name, f.description AS film_description,
                    f.release_date, f.duration,
                    m.mpa_id, m.name AS mpa_name, m.description AS mpa_description,
                    g.genre_id, g.name AS genre_name
@@ -42,7 +42,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage,
             """;
 
     private static final String GET_FILM_BY_ID_QUERY = """
-            SELECT f.film_id, f.name AS film_name, f.description AS film_description, 
+            SELECT f.film_id, f.name AS film_name, f.description AS film_description,
                    f.release_date, f.duration,
                    m.mpa_id, m.name AS mpa_name, m.description AS mpa_description,
                    g.genre_id, g.name AS genre_name
@@ -55,7 +55,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage,
             """;
 
     private static final String GET_POPULAR_FILMS_QUERY = """
-            SELECT f.film_id, f.name AS film_name, f.description AS film_description, 
+            SELECT f.film_id, f.name AS film_name, f.description AS film_description,
                    f.release_date, f.duration,
                    m.mpa_id, m.name AS mpa_name, m.description AS mpa_description,
                    g.genre_id, g.name AS genre_name,
