@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dto.GenreDto;
 import ru.yandex.practicum.filmorate.service.film.GenreService;
 
-import java.util.Collection;
 import java.util.List;
 
 @RestController
