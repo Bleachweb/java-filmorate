@@ -3,15 +3,16 @@ package ru.yandex.practicum.filmorate.model;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 import ru.yandex.practicum.filmorate.validation.LoginConstraint;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
+@Builder
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
     private int id;
 
@@ -29,17 +30,7 @@ public class User {
     private LocalDate birthday;
 
     @Getter
-    private Map<Integer, FriendshipStatus> friends = new HashMap<>();
+    private Set<Integer> friends;
+    ;
 
-    public void addFriend(int friendId, FriendshipStatus status) {
-        friends.put(friendId, status);
-    }
-
-    public void removeFriend(int friendId) {
-        friends.remove(friendId);
-    }
-
-    public String getName() {
-        return (name == null || name.isBlank()) ? login : name;
-    }
 }

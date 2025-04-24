@@ -1,46 +1,34 @@
-package ru.yandex.practicum.filmorate.model;
+package ru.yandex.practicum.filmorate.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import ru.yandex.practicum.filmorate.validation.ValidReleaseDate;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
-@Builder
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Film {
+@Builder
+public class FilmRequest {
     private static final int MAX_SIZE_DESCRIPTION = 200;
-    private int id;
+    private Integer id;
 
-    @NotBlank(message = "Название фильма не может быть пустым.")
+    @NotBlank(message = "Название не может быть пустым.")
     private String name;
 
     @Size(max = MAX_SIZE_DESCRIPTION, message = "Максимальная длина описания — " + MAX_SIZE_DESCRIPTION + " символов.")
     private String description;
-
-    @NotNull(message = "Дата релиза не может быть пустой.")
-    @ValidReleaseDate
     private LocalDate releaseDate;
 
     @Positive(message = "Продолжительность фильма должна быть положительным числом.")
-    private int duration;
+    private Integer duration;
 
     private MpaRating mpa;
 
-    private Set<Genre> genres = new HashSet<>();
-
-    @JsonIgnore
-    private final Set<Integer> likes = new HashSet<>();
-
+    private Set<Genre> genres;
 }
