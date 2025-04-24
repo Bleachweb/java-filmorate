@@ -22,19 +22,19 @@ Template repository for Filmorate project.
 <details>
 <summary> Таблица friendships</summary> 
 
-| user_id | friend_id | status    |
-|---------|-----------|-----------|
-| 1       | 2         | CONFIRMED |
-| 1       | 3         | PENDING   |
-| 2       | 3         | CONFIRMED |
+| friendship_id | user_id | friend_id | is_friend |
+|---------------|---------|-----------|-----------|
+| 1             | 1       | 2         | true      |
+| 2             | 1       | 3         | false     |
+| 3             | 2       | 3         | true      |
 
 </details>
 
 ```ruby
 SELECT u.*
 FROM users u
-JOIN friendships f1 ON u.user_id = f1.friend_id AND f1.user_id = 1 AND f1.status = 'CONFIRMED'
-JOIN friendships f2 ON u.user_id = f2.friend_id AND f2.user_id = 2 AND f2.status = 'CONFIRMED';
+JOIN friendships f1 ON u.user_id = f1.friend_id AND f1.user_id = 1 AND f1.is_friend = 'true'
+JOIN friendships f2 ON u.user_id = f2.friend_id AND f2.user_id = 2 AND f2.is_friend = 'true';
 ```
 
 | user_id | email             | login | name | birthday   |
@@ -46,11 +46,11 @@ JOIN friendships f2 ON u.user_id = f2.friend_id AND f2.user_id = 2 AND f2.status
 <details>
 <summary> Таблица films</summary>  
 
-| film_id | title  | description      | release_date | duration | mpa_code |
-|---------|--------|------------------|--------------|----------|----------|
-| 1       | first  | some description | 01/01/2025   | 90       | G        |
-| 2       | second | some description | 28/03/1995   | 90       | PG       |
-| 3       | third  | some description | 13/08/2004   | 120      | R        |   
+| film_id | title  | description      | release_date | duration | mpa_id |
+|---------|--------|------------------|--------------|----------|--------|
+| 1       | first  | some description | 01/01/2025   | 90       | 1      |
+| 2       | second | some description | 28/03/1995   | 90       | 2      |
+| 3       | third  | some description | 13/08/2004   | 120      | 5      |   
 
 </details>
 
@@ -105,9 +105,9 @@ ORDER BY likes_count DESC
 LIMIT 3;
 ```
 
-| film_id | title  | description      | release_date | duration | mpa_code | likes_count |
-|---------|--------|------------------|--------------|----------|----------|-------------|
-| 1       | first  | some description | 01/01/2025   | 90       | G        | 20          |
-| 2       | second | some description | 28/03/1995   | 90       | PG       | 18          |
-| 3       | third  | some description | 13/08/2004   | 120      | R        | 15          |
+| film_id | title  | description      | release_date | duration | mpa_id | likes_count |
+|---------|--------|------------------|--------------|----------|--------|-------------|
+| 1       | first  | some description | 01/01/2025   | 90       | 1      | 20          |
+| 2       | second | some description | 28/03/1995   | 90       | 2      | 18          |
+| 3       | third  | some description | 13/08/2004   | 120      | 5      | 15          |
 
