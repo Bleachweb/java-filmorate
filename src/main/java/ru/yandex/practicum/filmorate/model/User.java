@@ -31,6 +31,4 @@ public class User {
 
     @Getter
     private Set<Integer> friends;
-    ;
-
 }
