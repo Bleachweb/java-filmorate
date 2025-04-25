@@ -22,19 +22,19 @@ Template repository for Filmorate project.
 <details>
 <summary> Таблица friendships</summary> 
 
-| friendship_id | user_id | friend_id | is_friend |
-|---------------|---------|-----------|-----------|
-| 1             | 1       | 2         | true      |
-| 2             | 1       | 3         | false     |
-| 3             | 2       | 3         | true      |
+| friendship_id | user_id | friend_id | status     |
+|---------------|---------|-----------|------------|
+| 1             | 1       | 2         | not_friend |
+| 2             | 1       | 3         | friend     |
+| 3             | 2       | 3         | friend     |
 
 </details>
 
 ```ruby
 SELECT u.*
 FROM users u
-JOIN friendships f1 ON u.user_id = f1.friend_id AND f1.user_id = 1 AND f1.is_friend = 'true'
-JOIN friendships f2 ON u.user_id = f2.friend_id AND f2.user_id = 2 AND f2.is_friend = 'true';
+JOIN friendships f1 ON u.user_id = f1.friend_id AND f1.user_id = 1 AND f1.status = 'friend'
+JOIN friendships f2 ON u.user_id = f2.friend_id AND f2.user_id = 2 AND f2.status = 'friend';
 ```
 
 | user_id | email             | login | name | birthday   |
