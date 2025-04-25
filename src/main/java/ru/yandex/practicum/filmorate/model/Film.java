@@ -38,6 +38,7 @@ public class Film {
 
     private MpaRating mpa;
 
+    @Builder.Default
     private Set<Genre> genres = new HashSet<>();
 
     @JsonIgnore

@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Friendship;
+import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.storage.user.FriendStorage;
 
 import java.util.*;
@@ -15,12 +16,12 @@ public class FriendshipRepository extends BaseRepository<Friendship> implements 
 
     private static final String INSERT_FRIEND_QUERY = """
             INSERT INTO FRIENDSHIP
-            (user_id, friend_id, is_friend)
+            (user_id, friend_id, status)
             VALUES (?, ?, ?)
             """;
 
     private static final String GET_FRIENDSHIP_QUERY = """
-            SELECT *
+            SELECT user_id, friend_id
             FROM FRIENDSHIP
             """;
 
@@ -36,9 +37,9 @@ public class FriendshipRepository extends BaseRepository<Friendship> implements 
             AND friend_id = ?
             """;
 
-    private static final String UPDATE_IS_FRIENDS_QUERY = """
+    private static final String UPDATE_STATUS_QUERY = """
             UPDATE FRIENDSHIP
-            SET is_friend = ?
+            SET status = ?
             WHERE friendship_id = ?
             """;
 
@@ -53,8 +54,11 @@ public class FriendshipRepository extends BaseRepository<Friendship> implements 
     }
 
     @Override
-    public void addFriend(int userId, int friendId, boolean isFriend) {
-        insertToDatabase(INSERT_FRIEND_QUERY, userId, friendId, isFriend);
+    public void addFriend(int userId, int friendId, FriendshipStatus status) {
+        jdbcTemplate.update(INSERT_FRIEND_QUERY,
+                userId,
+                friendId,
+                status.name());
     }
 
     @Override
@@ -62,8 +66,17 @@ public class FriendshipRepository extends BaseRepository<Friendship> implements 
         delete(DELETE_FRIENDSHIP_QUERY, userId, friendId);
     }
 
-    public List<Friendship> getFriendship() {
-        return getAll(GET_FRIENDSHIP_QUERY);
+    @Override
+    public Map<Integer, Set<Integer>> getFriendship() {
+        return jdbcTemplate.query(GET_FRIENDSHIP_QUERY, rs -> {
+            Map<Integer, Set<Integer>> result = new HashMap<>();
+            while (rs.next()) {
+                int userId = rs.getInt("user_id");
+                int friendId = rs.getInt("friend_id");
+                result.computeIfAbsent(userId, k -> new HashSet<>()).add(friendId);
+            }
+            return result;
+        });
     }
 
     @Override
@@ -78,7 +91,9 @@ public class FriendshipRepository extends BaseRepository<Friendship> implements 
     }
 
     @Override
-    public void updateFriendship(Integer friendshipId, Boolean isFriend) {
-        update(UPDATE_IS_FRIENDS_QUERY, isFriend, friendshipId);
+    public void updateFriendship(Integer friendshipId, FriendshipStatus status) {
+        jdbcTemplate.update(UPDATE_STATUS_QUERY,
+                status.name(),
+                friendshipId);
     }
 }

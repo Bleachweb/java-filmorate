@@ -56,14 +56,12 @@ public class UserRepository extends BaseRepository<User> implements UserStorage 
             """;
 
     private static final String GET_COMMON_FRIENDS_QUERY = """
-            SELECT * FROM USERS u
-            JOIN FRIENDSHIP f
-            ON u.user_id = f.friend_id
-            WHERE f.user_id = ?
-            AND f.friend_id
-            IN (SELECT friend_id
-            FROM FRIENDSHIP
-            WHERE user_id = ?)
+            SELECT u.*
+            FROM USERS u
+            JOIN FRIENDSHIP f1 ON u.user_id = f1.friend_id  -- Друзья первого пользователя (?)
+            JOIN FRIENDSHIP f2 ON u.user_id = f2.friend_id  -- Друзья второго пользователя (?)
+            WHERE f1.user_id = ?
+            AND f2.user_id = ?
             """;
 
     public UserRepository(JdbcTemplate jdbcTemplate, RowMapper<User> userRowMapper) {
@@ -72,9 +70,6 @@ public class UserRepository extends BaseRepository<User> implements UserStorage 
 
     @Override
     public User addUser(User user) {
-        if (user.getName() == null) {
-            user.setName(user.getLogin().trim());
-        }
         Integer id = insertToDatabase(
                 CREATE_USER_QUERY,
                 user.getLogin(),

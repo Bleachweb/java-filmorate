@@ -9,14 +9,14 @@ import ru.yandex.practicum.filmorate.exception.DuplicateFoundException;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
-import ru.yandex.practicum.filmorate.model.Friendship;
+import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.FriendStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -32,6 +32,9 @@ public class UserService {
 
     public UserDto addUser(UserRequest request) {
         User user = UserMapper.mapToUser(request);
+        if (user.getName() == null) {
+            user.setName(user.getLogin().trim());
+        }
         return UserMapper.mapToUserDto(userStorage.addUser(user));
     }
 
@@ -45,15 +48,13 @@ public class UserService {
 
     public List<UserDto> getAllUsers() {
         List<UserDto> usersDto = UserMapper.mapToUserDtoList(userStorage.getAllUsers());
-        List<Friendship> friendships = friendStorage.getFriendship();
 
-        usersDto.forEach(userDto -> {
-            Set<Integer> friendshipIds = friendships.stream()
-                    .filter(friendship -> friendship.getUserId().equals(userDto.getId()))
-                    .map(Friendship::getFriendId)
-                    .collect(Collectors.toSet());
-            userDto.setFriends(friendshipIds);
-        });
+        Map<Integer, Set<Integer>> friendsByUserId = friendStorage.getFriendship();
+
+        usersDto.forEach(userDto ->
+                userDto.setFriends(friendsByUserId.getOrDefault(userDto.getId(), Set.of()))
+        );
+
         return usersDto;
     }
 
@@ -66,8 +67,8 @@ public class UserService {
     public void addFriend(int userId, int friendId) {
         checkUser(userId);
         checkUser(friendId);
-        boolean isFriend = validateFriendship(userId, friendId);
-        friendStorage.addFriend(userId, friendId, isFriend);
+        FriendshipStatus status = validateFriendship(userId, friendId);
+        friendStorage.addFriend(userId, friendId, status);
     }
 
     public void removeFriend(int userId, int friendId) {
@@ -75,7 +76,7 @@ public class UserService {
         checkUser(friendId);
         friendStorage.removeFriend(userId, friendId);
         Integer friendshipId = friendStorage.getFriendshipId(userId, friendId);
-        friendStorage.updateFriendship(friendshipId, false);
+        friendStorage.updateFriendship(friendshipId, FriendshipStatus.NOT_FRIEND);
     }
 
     public List<UserDto> getFriends(int userId) {
@@ -93,11 +94,11 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("Пользователь с id " + id + " не найден."));
     }
 
-    private boolean validateFriendship(Integer userId, Integer friendId) {
+    private FriendshipStatus validateFriendship(Integer userId, Integer friendId) {
         if (userId.equals(friendId)) {
             throw new InternalServerException("Нельзя себя добавить в друзья");
         }
-        boolean isFriend = false;
+
         Set<Integer> userFriendsIds = friendStorage.getFriendsIds(userId);
         Set<Integer> friendFriendsIds = friendStorage.getFriendsIds(friendId);
 
@@ -106,10 +107,11 @@ public class UserService {
         }
 
         if (friendFriendsIds.contains(userId)) {
-            isFriend = true;
             Integer friendshipId = friendStorage.getFriendshipId(userId, friendId);
-            friendStorage.updateFriendship(friendshipId, true);
+            friendStorage.updateFriendship(friendshipId, FriendshipStatus.FRIEND);
+            return FriendshipStatus.FRIEND;
         }
-        return isFriend;
+        return FriendshipStatus.NOT_FRIEND;
     }
+
 }

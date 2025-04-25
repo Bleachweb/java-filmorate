@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.ComponentScan;
 import ru.yandex.practicum.filmorate.dal.FriendshipRepository;
 import ru.yandex.practicum.filmorate.dal.UserRepository;
+import ru.yandex.practicum.filmorate.model.FriendshipStatus;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -97,7 +98,7 @@ public class UserRepositoryTest {
         final int userId = newUser.getId();
         final int friendId = newFriend.getId();
 
-        friendshipStorage.addFriend(userId, friendId, false);
+        friendshipStorage.addFriend(userId, friendId, FriendshipStatus.NOT_FRIEND);
         Set<Integer> friendsIds = friendshipStorage.getFriendsIds(userId);
         Integer id = friendsIds.stream().findFirst().orElse(null);
         assert id != null;

@@ -2,6 +2,7 @@
 package ru.yandex.practicum.filmorate.service.film;
 
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.MpaRatingDto;
@@ -12,13 +13,10 @@ import ru.yandex.practicum.filmorate.storage.film.MpaRatingStorage;
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class MpaRatingService {
     private final MpaRatingStorage mpaStorage;
-
-    public MpaRatingService(MpaRatingStorage mpaStorage) {
-        this.mpaStorage = mpaStorage;
-    }
 
     public MpaRatingDto getMPAById(Integer mpaId) {
         return mpaStorage.getMpaById(mpaId)

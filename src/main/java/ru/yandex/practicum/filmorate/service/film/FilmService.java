@@ -10,13 +10,17 @@ import ru.yandex.practicum.filmorate.dto.FilmRequest;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
-import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -86,40 +90,51 @@ public class FilmService {
     }
 
     public void validate(int filmId, int userId) {
-        Optional<Film> film = filmStorage.getFilmById(filmId);
-        if (film.isEmpty()) {
-            throw new NotFoundException("Фильм с id " + filmId + " не найден.");
-        }
+        filmStorage.getFilmById(filmId)
+                .orElseThrow(() -> new NotFoundException("Фильм с id " + filmId + " не найден."));
 
-        Optional<User> user = userStorage.getUserById(userId);
-        if (user.isEmpty()) {
-            throw new NotFoundException("Пользователь с id " + userId + " не найден.");
-        }
+        userStorage.getUserById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + userId + " не найден."));
     }
 
     private FilmRequest updateFieldsForRequest(FilmRequest filmRequest) {
         validateRequest(filmRequest);
-        if (filmRequest.getMpa() != null) {
-            int mpaId = filmRequest.getMpa().getId();
-            filmRequest.setMpa(mpaRepository.getMpaById(mpaId)
-                    .orElseThrow(() -> new NotFoundException("Категория с id - " + mpaId + " не найдена")));
-        } else {
-            filmRequest.setMpa(MpaRating.builder().build());
-        }
-
-        if (filmRequest.getGenres() != null) {
-            Set<Genre> genres = new LinkedHashSet<>();
-            for (Genre genre : filmRequest.getGenres()) {
-                int genreId = genre.getId();
-                genres.add(genreRepository.getGenreById(genreId)
-                        .orElseThrow(() -> new NotFoundException("Жанр с id - " + genreId + " не найден")));
-            }
-            filmRequest.setGenres(genres);
-        } else {
-            filmRequest.setGenres(new HashSet<>());
-        }
-
+        filmRequest.setMpa(processMpa(filmRequest.getMpa()));
+        filmRequest.setGenres(processGenres(filmRequest.getGenres()));
         return filmRequest;
+    }
+
+    private MpaRating processMpa(MpaRating mpa) {
+        if (mpa == null) {
+            return MpaRating.builder().build();
+        }
+        int mpaId = mpa.getId();
+        return mpaRepository.getMpaById(mpaId)
+                .orElseThrow(() -> new NotFoundException("Категория с id - " + mpaId + " не найдена"));
+    }
+
+    private Set<Genre> processGenres(Set<Genre> genres) {
+        if (genres == null || genres.isEmpty()) {
+            return new HashSet<>();
+        }
+
+        Set<Integer> genreIds = genres.stream()
+                .map(Genre::getId)
+                .collect(Collectors.toSet());
+
+        Map<Integer, Genre> existingGenres = genreRepository.getGenresByIds(genreIds)
+                .stream()
+                .collect(Collectors.toMap(Genre::getId, Function.identity()));
+
+        Set<Integer> notFoundIds = genreIds.stream()
+                .filter(id -> !existingGenres.containsKey(id))
+                .collect(Collectors.toSet());
+
+        if (!notFoundIds.isEmpty()) {
+            throw new NotFoundException("Жанры с id " + notFoundIds + " не найдены");
+        }
+
+        return new LinkedHashSet<>(existingGenres.values());
     }
 
     private static void validateRequest(FilmRequest filmRequest) {

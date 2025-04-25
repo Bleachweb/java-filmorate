@@ -2,6 +2,7 @@
 package ru.yandex.practicum.filmorate.service.film;
 
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.GenreDto;
@@ -12,13 +13,10 @@ import ru.yandex.practicum.filmorate.storage.film.GenreStorage;
 import java.util.Collection;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class GenreService {
     private final GenreStorage genreStorage;
-
-    public GenreService(GenreStorage genreStorage) {
-        this.genreStorage = genreStorage;
-    }
 
     public GenreDto getGenreById(Integer genreId) {
         return genreStorage.getGenreById(genreId)

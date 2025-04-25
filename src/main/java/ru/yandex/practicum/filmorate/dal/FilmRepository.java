@@ -10,7 +10,9 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.LikeStorage;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 @Repository
@@ -89,7 +91,7 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage,
                 film.getMpa() != null ? film.getMpa().getId() : null
         );
         film.setId(id);
-        if (film.getGenres() != null && !film.getGenres().isEmpty()) {
+        if (!film.getGenres().isEmpty()) {
             filmGenreRepository.setGenresForFilm(film);
         }
         return film;
@@ -112,8 +114,9 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage,
 
     @Override
     public Optional<Film> getFilmById(int filmId) {
-        List<Film> films = jdbcTemplate.query(GET_FILM_BY_ID_QUERY, new FilmExtractor(), filmId);
-        return films.isEmpty() ? Optional.empty() : Optional.of(films.get(0));
+        return Objects.requireNonNull(jdbcTemplate
+                        .query(GET_FILM_BY_ID_QUERY, new FilmExtractor(), filmId))
+                .stream().findFirst();
     }
 
     @Override
