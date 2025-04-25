@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Like;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.LikeStorage;
@@ -74,18 +75,18 @@ public class FilmService {
 
     public FilmDto addLike(int filmId, int userId) {
         validate(filmId, userId);
-        likeStorage.addLike(filmId, userId);
+        likeStorage.addLike(new Like(filmId, userId));
         return getFilmById(filmId);
     }
 
     public FilmDto removeLike(int filmId, int userId) {
         validate(filmId, userId);
-        likeStorage.removeLike(filmId, userId);
+        likeStorage.removeLike(new Like(filmId, userId));
         return getFilmById(filmId);
     }
 
     public List<FilmDto> getPopularFilms(int count) {
-        return likeStorage.getPopularFilms(count)
+        return filmStorage.getPopularFilms(count)
                 .stream().map(FilmMapper::mapToFilmDto).toList();
     }
 
