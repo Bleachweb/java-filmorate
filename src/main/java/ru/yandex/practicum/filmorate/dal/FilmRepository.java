@@ -12,15 +12,13 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
 public class FilmRepository extends BaseRepository<Film> implements FilmStorage {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private final FilmGenreRepository filmGenreRepository;
-    private final LikeRepository likeRepository;
+
 
     private static final String INSERT_FILM_QUERY = """
             INSERT INTO films (name, description, release_date, duration, mpa_id)
@@ -57,11 +55,9 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
             """;
 
 
-    public FilmRepository(JdbcTemplate jdbcTemplate, FilmRowMapper filmRowMapper,
-                          LikeRepository likeRepository, FilmGenreRepository filmGenreRepository) {
+    public FilmRepository(JdbcTemplate jdbcTemplate, FilmRowMapper filmRowMapper) {
         super(jdbcTemplate, filmRowMapper);
-        this.likeRepository = likeRepository;
-        this.filmGenreRepository = filmGenreRepository;
+
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
 
     }
@@ -77,9 +73,6 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                 film.getMpa() != null ? film.getMpa().getId() : null
         );
         film.setId(id);
-        if (!film.getGenres().isEmpty()) {
-            filmGenreRepository.setGenresForFilm(film);
-        }
         return film;
     }
 
@@ -94,7 +87,6 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
                 film.getMpa() != null ? film.getMpa().getId() : null,
                 film.getId()
         );
-        filmGenreRepository.setGenresForFilm(film);
         return film;
     }
 
@@ -108,14 +100,5 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
     @Override
     public List<Film> getAllFilms() {
         return jdbcTemplate.query(GET_ALL_FILM_QUERY, new FilmExtractor());
-    }
-
-    @Override
-    public List<Film> getPopularFilms(int count) {
-        return likeRepository.getPopularFilmIds(count).stream()
-                .map(this::getFilmById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
     }
 }

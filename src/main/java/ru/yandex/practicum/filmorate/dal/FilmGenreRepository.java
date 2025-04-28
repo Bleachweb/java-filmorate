@@ -66,7 +66,7 @@ public class FilmGenreRepository extends BaseRepository<FilmGenre> implements Fi
         delete(DELETE_GENRES_FROM_FILM, filmId);
     }
 
-    protected void setGenresForFilm(Film film) {
+    public void setGenresForFilm(Film film) {
         if (film.getGenres() != null) {
             HashSet<Integer> genreIds = film.getGenres().stream()
                     .map(Genre::getId)

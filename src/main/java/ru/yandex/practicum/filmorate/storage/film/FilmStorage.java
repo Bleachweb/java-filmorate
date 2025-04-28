@@ -14,5 +14,4 @@ public interface FilmStorage {
 
     Optional<Film> getFilmById(int id);
 
-    List<Film> getPopularFilms(int count);
 }
