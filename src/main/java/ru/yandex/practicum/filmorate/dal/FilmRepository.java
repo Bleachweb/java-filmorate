@@ -19,7 +19,6 @@ public class FilmRepository extends BaseRepository<Film> implements FilmStorage 
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-
     private static final String INSERT_FILM_QUERY = """
             INSERT INTO films (name, description, release_date, duration, mpa_id)
             VALUES (?, ?, ?, ?, ?)""";
